@@ -112,7 +112,7 @@ const SuperAdminDashboard = () => {
       category_id: categories.length > 0 ? categories[0].category_id : '',
       type_id: questionTypes.length > 0 ? questionTypes[0].type_id : '',
       question_text: '',
-      applicable_course_type: 'Theory / Lab',
+      applicable_course_type: 'THEORY',
       display_order: questions.length + 1,
       is_required: 1,
       status: 1
@@ -535,12 +535,17 @@ const SuperAdminDashboard = () => {
 
                 <div className="form-group">
                   <label>Sub Type / Course Type</label>
-                  <input
-                    type="text"
-                    placeholder="e.g. Theory, Practical, Integrated"
+                  <select
                     value={questionForm.applicable_course_type}
                     onChange={(e) => setQuestionForm({ ...questionForm, applicable_course_type: e.target.value })}
-                  />
+                    required
+                  >
+                    <option value="All">All / General</option>
+                    <option value="THEORY">THEORY</option>
+                    <option value="PRACTICAL">PRACTICAL / LAB</option>
+                    <option value="INTEGRATED">INTEGRATED (Theory + Lab)</option>
+                    <option value="EXPERIENTIAL LEARNING">EXPERIENTIAL LEARNING</option>
+                  </select>
                 </div>
 
                 <div className="form-group">

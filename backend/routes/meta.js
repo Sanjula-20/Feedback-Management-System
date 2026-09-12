@@ -6,7 +6,7 @@ const { verifyToken } = require('../middleware/auth');
 // GET /api/meta/categories
 router.get('/categories', verifyToken, async (req, res) => {
   try {
-    const [rows] = await pool.query(`SELECT * FROM feedback_categories ORDER BY category_name ASC`);
+    const [rows] = await pool.query(`SELECT DISTINCT category_id, category_name, description, status FROM feedback_categories ORDER BY category_name ASC`);
     return res.json({ success: true, data: rows });
   } catch (err) {
     console.error('[META ERROR] Categories:', err);
@@ -17,7 +17,7 @@ router.get('/categories', verifyToken, async (req, res) => {
 // GET /api/meta/question-types
 router.get('/question-types', verifyToken, async (req, res) => {
   try {
-    const [rows] = await pool.query(`SELECT * FROM feedback_question_types ORDER BY type_name ASC`);
+    const [rows] = await pool.query(`SELECT DISTINCT type_id, type_name, description, status FROM feedback_question_types ORDER BY type_name ASC`);
     return res.json({ success: true, data: rows });
   } catch (err) {
     console.error('[META ERROR] Question Types:', err);
@@ -25,10 +25,15 @@ router.get('/question-types', verifyToken, async (req, res) => {
   }
 });
 
-// GET /api/meta/departments
+// GET /api/meta/departments - Filter active and non-deleted departments only
 router.get('/departments', verifyToken, async (req, res) => {
   try {
-    const [rows] = await pool.query(`SELECT * FROM departments WHERE status = 'Active' ORDER BY departmentName ASC`);
+    const [rows] = await pool.query(
+      `SELECT DISTINCT departmentId, departmentName, departmentAcr, status 
+       FROM departments 
+       WHERE status = 'Active' AND deletedAt IS NULL 
+       ORDER BY departmentName ASC`
+    );
     return res.json({ success: true, data: rows });
   } catch (err) {
     console.error('[META ERROR] Departments:', err);
@@ -36,10 +41,15 @@ router.get('/departments', verifyToken, async (req, res) => {
   }
 });
 
-// GET /api/meta/semesters
+// GET /api/meta/semesters - Return UNIQUE semester numbers to avoid duplicate options in UI dropdowns
 router.get('/semesters', verifyToken, async (req, res) => {
   try {
-    const [rows] = await pool.query(`SELECT * FROM semester ORDER BY semesterNumber ASC`);
+    const [rows] = await pool.query(
+      `SELECT DISTINCT semesterNumber, MIN(semesterId) AS semesterId 
+       FROM semester 
+       GROUP BY semesterNumber 
+       ORDER BY semesterNumber ASC`
+    );
     return res.json({ success: true, data: rows });
   } catch (err) {
     console.error('[META ERROR] Semesters:', err);
@@ -50,7 +60,6 @@ router.get('/semesters', verifyToken, async (req, res) => {
 // GET /api/meta/academic-years
 router.get('/academic-years', verifyToken, async (req, res) => {
   try {
-    // Generate recent/current academic years as options
     const currentYear = new Date().getFullYear();
     const years = [];
     for (let i = -2; i <= 2; i++) {

@@ -154,20 +154,39 @@
 }
 
 .btn-primary {
-  background-color: #0284c7;
+  background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
   color: #ffffff;
   border: none;
-  padding: 9px 18px;
-  border-radius: 7px;
+  padding: 9.5px 20px;
+  border-radius: 8px;
   font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 6px rgba(2, 132, 199, 0.25);
+}
+
+.btn-primary:hover {
+  background: linear-gradient(135deg, #0369a1 0%, #1e40af 100%);
+  box-shadow: 0 4px 12px rgba(2, 132, 199, 0.35);
+  transform: translateY(-1px);
+}
+
+.btn-secondary {
+  background-color: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  color: #475569;
+  padding: 9px 18px;
+  border-radius: 8px;
+  font-size: 13.5px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
-.btn-primary:hover {
-  background-color: #0369a1;
-  transform: translateY(-1px);
+.btn-secondary:hover {
+  background-color: #e2e8f0;
+  color: #1e293b;
 }
 
 /* Tables */
@@ -211,12 +230,13 @@
   background-color: #e0f2fe;
   color: #0369a1;
   border: 1px solid #bae6fd;
-  padding: 5px 12px;
-  border-radius: 5px;
+  padding: 6px 14px;
+  border-radius: 6px;
   font-size: 12px;
   font-weight: 600;
   cursor: pointer;
   margin-right: 8px;
+  transition: all 0.15s ease;
 }
 
 .btn-action-edit:hover {
@@ -227,11 +247,12 @@
   background-color: #fee2e2;
   color: #991b1b;
   border: 1px solid #fca5a5;
-  padding: 5px 12px;
-  border-radius: 5px;
+  padding: 6px 14px;
+  border-radius: 6px;
   font-size: 12px;
   font-weight: 600;
   cursor: pointer;
+  transition: all 0.15s ease;
 }
 
 .btn-action-delete:hover {
@@ -242,12 +263,13 @@
   background-color: #dcfce7;
   color: #15803d;
   border: 1px solid #86efac;
-  padding: 5px 12px;
-  border-radius: 5px;
+  padding: 6px 14px;
+  border-radius: 6px;
   font-size: 12px;
   font-weight: 600;
   cursor: pointer;
   margin-left: 8px;
+  transition: all 0.15s ease;
 }
 
 .btn-action-enable:hover {
@@ -258,15 +280,20 @@
   background-color: #f1f5f9;
   color: #334155;
   border: 1px solid #cbd5e1;
-  padding: 5px 12px;
-  border-radius: 5px;
+  padding: 6px 14px;
+  border-radius: 6px;
   font-size: 12px;
   font-weight: 600;
   cursor: pointer;
   margin-right: 6px;
+  transition: all 0.15s ease;
 }
 
-/* Status Badge */
+.btn-action-preview:hover {
+  background-color: #e2e8f0;
+}
+
+/* Status Badges */
 .status-pill {
   display: inline-block;
   padding: 3px 10px;
@@ -317,18 +344,19 @@
 }
 
 .report-filter-item select {
-  padding: 9px 12px;
+  padding: 10px 14px;
   border: 1px solid #cbd5e1;
-  border-radius: 6px;
+  border-radius: 8px;
   font-size: 13.5px;
   outline: none;
   background-color: #ffffff;
   color: #0f172a;
+  transition: all 0.2s ease;
 }
 
 .report-filter-item select:focus {
   border-color: #0284c7;
-  box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.12);
+  box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15);
 }
 
 .report-actions {
@@ -337,7 +365,7 @@
   margin-bottom: 20px;
 }
 
-/* Modal Overlay */
+/* Modal Overlay & Card Animation */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -345,12 +373,18 @@
   right: 0;
   bottom: 0;
   background-color: rgba(15, 23, 42, 0.6);
-  backdrop-filter: blur(3px);
+  backdrop-filter: blur(4px);
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 1000;
   padding: 20px;
+  animation: fadeInOverlay 0.2s ease;
+}
+
+@keyframes fadeInOverlay {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 .modal-content {
@@ -358,11 +392,23 @@
   border-radius: 12px;
   width: 100%;
   max-width: 580px;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
   display: flex;
   flex-direction: column;
   max-height: 90vh;
   overflow: hidden;
+  animation: modalScaleIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes modalScaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.96) translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
 }
 
 .modal-header {
@@ -375,7 +421,7 @@
 }
 
 .modal-header h4 {
-  font-size: 16px;
+  font-size: 16.5px;
   font-weight: 700;
   margin: 0;
   color: #0f172a;
@@ -384,9 +430,17 @@
 .btn-close-modal {
   background: none;
   border: none;
-  font-size: 20px;
+  font-size: 22px;
   color: #64748b;
   cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: color 0.15s ease, background-color 0.15s ease;
+}
+
+.btn-close-modal:hover {
+  color: #0f172a;
+  background-color: #e2e8f0;
 }
 
 .modal-body {
@@ -394,7 +448,50 @@
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 18px;
+}
+
+/* Interactive Form Inputs & Select Dropdowns inside Modal */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-group label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #334155;
+}
+
+.form-group select,
+.form-group input,
+.form-group textarea {
+  width: 100%;
+  padding: 10.5px 14px;
+  font-size: 14px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  outline: none;
+  background-color: #ffffff;
+  color: #0f172a;
+  box-sizing: border-box;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  font-family: inherit;
+}
+
+.form-group select:hover,
+.form-group input:hover,
+.form-group textarea:hover {
+  border-color: #94a3b8;
+}
+
+.form-group select:focus,
+.form-group input:focus,
+.form-group textarea:focus {
+  border-color: #0284c7;
+  box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15);
+  background-color: #ffffff;
 }
 
 .modal-footer {
@@ -404,17 +501,6 @@
   justify-content: flex-end;
   gap: 12px;
   background-color: #f8fafc;
-}
-
-.btn-secondary {
-  background-color: #f1f5f9;
-  border: 1px solid #cbd5e1;
-  color: #475569;
-  padding: 8px 16px;
-  border-radius: 6px;
-  font-size: 13.5px;
-  font-weight: 600;
-  cursor: pointer;
 }
 
 /* Empty state */

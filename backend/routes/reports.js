@@ -47,8 +47,8 @@ router.get('/', verifyToken, async (req, res) => {
       queryParams.push(academicYear);
     }
     if (semesterId) {
-      baseQuery += ` AND fs.semester_id = ?`;
-      queryParams.push(semesterId);
+      baseQuery += ` AND (fs.semester_id = ? OR sem.semesterNumber = ?)`;
+      queryParams.push(semesterId, semesterId);
     }
     if (departmentId) {
       baseQuery += ` AND fs.department_id = ?`;
