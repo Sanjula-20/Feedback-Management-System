@@ -7,41 +7,37 @@
   justify-content: center;
   align-items: center;
   position: relative;
-  background-color: #0f172a;
-  background-image: 
-    radial-gradient(at 0% 0%, rgba(30, 58, 138, 0.5) 0px, transparent 50%),
-    radial-gradient(at 100% 100%, rgba(14, 165, 233, 0.25) 0px, transparent 50%),
-    linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  background-image: url('/assets/background.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
-  padding: 20px;
+  padding: 24px 20px;
   box-sizing: border-box;
 }
 
-/* Background image placeholder overlay */
+/* Background overlay (disabled to keep original background photo untouched) */
 .login-bg-placeholder {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: radial-gradient(circle at 50% 30%, rgba(2, 132, 199, 0.15), transparent 70%);
-  pointer-events: none;
+  display: none;
 }
 
-/* Main Login Card */
+/* Main Login Card - Enlarged White Box */
 .login-card {
   position: relative;
   z-index: 10;
   width: 100%;
-  max-width: 440px;
-  background: #ffffff;
-  border-radius: 12px;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.1);
-  padding: 36px 32px;
+  max-width: 500px;
+  background: rgba(255, 255, 255, 0.98);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: 18px;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(255, 255, 255, 0.5);
+  padding: 44px 40px;
   box-sizing: border-box;
 }
 
-/* College Logo & Header Area */
+/* College Logo & Header Alignment */
 .login-header {
   text-align: center;
   margin-bottom: 28px;
@@ -54,45 +50,32 @@
   margin-bottom: 16px;
 }
 
-.logo-placeholder {
-  width: 80px;
-  height: 80px;
-  background: linear-gradient(135deg, #0284c7, #1d4ed8);
-  border-radius: 50%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  color: #ffffff;
-  font-weight: 700;
-  font-family: 'Outfit', sans-serif;
-  box-shadow: 0 4px 12px rgba(2, 132, 199, 0.3);
+.college-logo-img {
+  height: 100px;
+  width: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.12));
+  transition: transform 0.3s ease;
 }
 
-.logo-placeholder span {
-  font-size: 22px;
-  line-height: 1;
-}
-
-.logo-placeholder small {
-  font-size: 9px;
-  letter-spacing: 1px;
-  margin-top: 2px;
-  opacity: 0.9;
+.college-logo-img:hover {
+  transform: scale(1.04);
 }
 
 .login-header h1 {
-  font-size: 20px;
+  font-size: 23px;
   font-weight: 700;
-  color: #1e293b;
-  margin: 0 0 6px 0;
+  color: #0f172a;
+  margin: 12px 0 6px 0;
   letter-spacing: -0.01em;
+  text-align: center;
 }
 
 .login-header p {
-  font-size: 13px;
-  color: #64748b;
+  font-size: 14px;
+  color: #475569;
   margin: 0;
+  text-align: center;
 }
 
 /* Error banner */

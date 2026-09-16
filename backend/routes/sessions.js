@@ -26,7 +26,49 @@ router.get('/', verifyToken, async (req, res) => {
   }
 });
 
-// POST /api/feedback-sessions - Add a session
+// GET /api/feedback-sessions/:id/preview - Preview questions assigned to session category
+router.get('/:id/preview', verifyToken, async (req, res) => {
+  try {
+    const sessionId = req.params.id;
+    const [sessionRows] = await pool.query(
+      `SELECT s.*, sem.semesterNumber, d.departmentName, c.category_name 
+       FROM feedback_sessions s
+       LEFT JOIN semester sem ON s.semester_id = sem.semesterId
+       LEFT JOIN departments d ON s.department_id = d.departmentId
+       LEFT JOIN feedback_categories c ON s.category_id = c.category_id
+       WHERE s.session_id = ?`,
+      [sessionId]
+    );
+
+    if (sessionRows.length === 0) {
+      return res.status(404).json({ success: false, message: 'Session not found' });
+    }
+
+    const session = sessionRows[0];
+
+    // Fetch questions linked to category or all active questions
+    const [questions] = await pool.query(
+      `SELECT q.*, c.category_name, t.type_name
+       FROM feedback_questions q
+       LEFT JOIN feedback_categories c ON q.category_id = c.category_id
+       LEFT JOIN feedback_question_types t ON q.type_id = t.type_id
+       WHERE (q.category_id = ? OR ? = 0) AND q.status = 1
+       ORDER BY q.display_order ASC`,
+      [session.category_id || 0, session.category_id || 0]
+    );
+
+    return res.json({
+      success: true,
+      session,
+      questions
+    });
+  } catch (err) {
+    console.error('[SESSIONS ERROR] PREVIEW:', err);
+    return res.status(500).json({ success: false, message: 'Failed to preview session questions' });
+  }
+});
+
+// POST /api/feedback-sessions - Add a new session
 router.post('/', verifyToken, requireRole('super-admin', 'superadmin'), async (req, res) => {
   try {
     const {
@@ -41,6 +83,13 @@ router.post('/', verifyToken, requireRole('super-admin', 'superadmin'), async (r
       status
     } = req.body;
 
+    if (!session_name || !academic_year || !semester_id || !department_id) {
+      return res.status(400).json({
+        success: false,
+        message: 'Academic Year, Semester, Department, and Session Name are required.'
+      });
+    }
+
     const userId = req.user.userId || 1;
     const now = new Date();
 
@@ -50,13 +99,13 @@ router.post('/', verifyToken, requireRole('super-admin', 'superadmin'), async (r
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         category_id || 1,
-        academic_year || '2026-27',
-        semester_id || 1,
-        department_id || 1,
-        session_name || 'Feedback Session',
+        academic_year,
+        semester_id,
+        department_id,
+        session_name.trim(),
         description || '',
-        start_date || now,
-        end_date || new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+        start_date ? new Date(start_date) : now,
+        end_date ? new Date(end_date) : new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
         status || 'Pending',
         userId,
         now,
@@ -64,8 +113,17 @@ router.post('/', verifyToken, requireRole('super-admin', 'superadmin'), async (r
       ]
     );
 
-    const [created] = await pool.query(`SELECT * FROM feedback_sessions WHERE session_id = ?`, [result.insertId]);
-    return res.status(201).json({ success: true, message: 'Session created', data: created[0] });
+    const [created] = await pool.query(
+      `SELECT s.*, sem.semesterNumber, d.departmentName, d.departmentAcr, c.category_name
+       FROM feedback_sessions s
+       LEFT JOIN semester sem ON s.semester_id = sem.semesterId
+       LEFT JOIN departments d ON s.department_id = d.departmentId
+       LEFT JOIN feedback_categories c ON s.category_id = c.category_id
+       WHERE s.session_id = ?`,
+      [result.insertId]
+    );
+
+    return res.status(201).json({ success: true, message: 'Session created successfully', data: created[0] });
   } catch (err) {
     console.error('[SESSIONS ERROR] POST:', err);
     return res.status(500).json({ success: false, message: 'Failed to create session' });
@@ -77,10 +135,14 @@ router.put('/:id', verifyToken, requireRole('super-admin', 'superadmin'), async 
   try {
     const sessionId = req.params.id;
     const {
+      category_id,
       academic_year,
       semester_id,
       department_id,
       session_name,
+      description,
+      start_date,
+      end_date,
       status
     } = req.body;
 
@@ -91,24 +153,41 @@ router.put('/:id', verifyToken, requireRole('super-admin', 'superadmin'), async 
 
     await pool.query(
       `UPDATE feedback_sessions
-       SET academic_year = ?,
+       SET category_id = ?,
+           academic_year = ?,
            semester_id = ?,
            department_id = ?,
            session_name = ?,
+           description = ?,
+           start_date = ?,
+           end_date = ?,
            status = ?,
            updated_at = NOW()
        WHERE session_id = ?`,
       [
+        category_id !== undefined ? category_id : existing[0].category_id,
         academic_year || existing[0].academic_year,
         semester_id || existing[0].semester_id,
         department_id || existing[0].department_id,
         session_name || existing[0].session_name,
+        description !== undefined ? description : existing[0].description,
+        start_date ? new Date(start_date) : existing[0].start_date,
+        end_date ? new Date(end_date) : existing[0].end_date,
         status || existing[0].status,
         sessionId
       ]
     );
 
-    const [updated] = await pool.query(`SELECT * FROM feedback_sessions WHERE session_id = ?`, [sessionId]);
+    const [updated] = await pool.query(
+      `SELECT s.*, sem.semesterNumber, d.departmentName, d.departmentAcr, c.category_name
+       FROM feedback_sessions s
+       LEFT JOIN semester sem ON s.semester_id = sem.semesterId
+       LEFT JOIN departments d ON s.department_id = d.departmentId
+       LEFT JOIN feedback_categories c ON s.category_id = c.category_id
+       WHERE s.session_id = ?`,
+      [sessionId]
+    );
+
     return res.json({ success: true, message: 'Session updated successfully', data: updated[0] });
   } catch (err) {
     console.error('[SESSIONS ERROR] PUT:', err);

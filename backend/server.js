@@ -7,6 +7,7 @@ const metaRoutes = require('./routes/meta');
 const questionRoutes = require('./routes/questions');
 const sessionRoutes = require('./routes/sessions');
 const reportRoutes = require('./routes/reports');
+const queryRoutes = require('./routes/queries');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -31,6 +32,7 @@ app.use('/api/meta', metaRoutes);
 app.use('/api/questions', questionRoutes);
 app.use('/api/feedback-sessions', sessionRoutes);
 app.use('/api/reports', reportRoutes);
+app.use('/api/queries', queryRoutes);
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {

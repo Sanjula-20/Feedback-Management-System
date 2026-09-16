@@ -43,13 +43,9 @@ const LoginPage = () => {
       <div className="login-card">
         <div className="login-header">
           <div className="college-logo-container">
-            {/* College Logo Placeholder - Ready to be replaced by actual image */}
-            <div className="logo-placeholder">
-              <span>IMS</span>
-              <small>COLLEGE</small>
-            </div>
+            <img src="/assets/college-logo.png" alt="National Engineering College" className="college-logo-img" />
           </div>
-          <h1>College LMS Portal</h1>
+          <h1>National Engineering College</h1>
           <p>Feedback Management System</p>
         </div>
 
